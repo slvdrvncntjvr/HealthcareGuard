@@ -34,16 +34,16 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+      <header className="border-b border-slate-800 bg-slate-950/90 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-primary-500 to-cyan-500 rounded-lg shadow-lg shadow-primary-500/25">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg shadow-lg shadow-blue-500/25">
                 <Shield className="h-6 w-6 text-white" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white tracking-tight">
-                  HealthGuard<span className="text-primary-400">AI</span>
+                  HealthGuard<span className="text-blue-400">AI</span>
                 </h1>
                 <p className="text-xs text-slate-400 hidden sm:block">
                   Healthcare Ad Compliance
@@ -53,7 +53,7 @@ export default function HomePage() {
             
             <div className="flex items-center gap-2">
               <span className="text-xs text-slate-500 hidden sm:block">Powered by</span>
-              <span className="text-xs font-medium text-slate-400 bg-slate-800 px-2 py-1 rounded">
+              <span className="text-xs font-medium text-slate-300 bg-slate-800 px-3 py-1.5 rounded-md border border-slate-700">
                 GPT-4o
               </span>
             </div>
@@ -63,15 +63,15 @@ export default function HomePage() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section - Only show when no report */}
-        {!report && (
+        {!report && !isLoading && (
           <div className="text-center mb-12 animate-fade-in">
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">
               Validate Your{' '}
-              <span className="bg-gradient-to-r from-primary-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
                 Healthcare Ads
               </span>
             </h2>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-8">
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-8">
               Protect your ad accounts from bans. Our AI analyzes your marketing copy and images 
               against Meta, Google, and TikTok healthcare advertising policies.
             </p>
@@ -81,10 +81,10 @@ export default function HomePage() {
               {features.map((feature) => (
                 <div
                   key={feature.title}
-                  className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-full text-sm"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-full text-sm shadow-lg"
                 >
-                  <feature.icon className="h-4 w-4 text-primary-400" />
-                  <span className="text-slate-300">{feature.title}</span>
+                  <feature.icon className="h-4 w-4 text-blue-400" />
+                  <span className="text-slate-200">{feature.title}</span>
                 </div>
               ))}
             </div>
@@ -124,11 +124,11 @@ export default function HomePage() {
         </div>
 
         {/* Footer Info */}
-        {!report && (
+        {!report && !isLoading && (
           <div className="mt-16 text-center animate-fade-in" style={{ animationDelay: '200ms' }}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800/30 border border-slate-700/30 rounded-full">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900/60 border border-slate-700/50 rounded-full">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-sm text-slate-400">
+              <span className="text-sm text-slate-300">
                 Checking against latest 2024 platform policies
               </span>
             </div>
@@ -137,14 +137,14 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-700/30 mt-auto">
+      <footer className="border-t border-slate-800 mt-auto">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-slate-500 text-sm">
+            <div className="flex items-center gap-2 text-slate-400 text-sm">
               <Shield className="h-4 w-4" />
               <span>HealthGuard AI - Healthcare Ad Compliance Validator</span>
             </div>
-            <div className="text-xs text-slate-600">
+            <div className="text-xs text-slate-500">
               This tool provides guidance only. Always consult platform policies directly.
             </div>
           </div>
@@ -153,4 +153,3 @@ export default function HomePage() {
     </div>
   )
 }
-

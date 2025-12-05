@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --background: #0a0f1c;
-  --foreground: #e2e8f0;
-  --card: #111827;
-  --card-foreground: #e2e8f0;
+  --background: #030712;
+  --foreground: #f1f5f9;
+  --card: #0f172a;
+  --card-foreground: #f1f5f9;
   --border: #1e293b;
   --primary: #3b82f6;
   --primary-foreground: #ffffff;
@@ -18,10 +18,15 @@
   --success: #10b981;
 }
 
+html {
+  background-color: #030712;
+}
+
 body {
   color: var(--foreground);
-  background: var(--background);
+  background-color: #030712;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  min-height: 100vh;
 }
 
 /* Custom scrollbar */
@@ -46,10 +51,11 @@ body {
 
 /* Gradient backgrounds */
 .gradient-mesh {
-  background: 
-    radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+  background-color: #030712;
+  background-image: 
+    radial-gradient(ellipse at 20% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 60%);
 }
 
 /* Card hover effect */
@@ -59,7 +65,7 @@ body {
 
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.2);
 }
 
 /* Score circle animation */
@@ -76,17 +82,17 @@ body {
 /* Violation card styles */
 .violation-critical {
   border-left: 4px solid var(--destructive);
-  background: linear-gradient(to right, rgba(239, 68, 68, 0.1), transparent);
+  background: linear-gradient(to right, rgba(239, 68, 68, 0.15), transparent);
 }
 
 .violation-warning {
   border-left: 4px solid var(--warning);
-  background: linear-gradient(to right, rgba(245, 158, 11, 0.1), transparent);
+  background: linear-gradient(to right, rgba(245, 158, 11, 0.15), transparent);
 }
 
 .violation-info {
   border-left: 4px solid var(--accent);
-  background: linear-gradient(to right, rgba(14, 165, 233, 0.1), transparent);
+  background: linear-gradient(to right, rgba(14, 165, 233, 0.15), transparent);
 }
 
 /* Input focus styles */
@@ -97,7 +103,7 @@ body {
 .input-focus:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 
 /* Button styles */
@@ -132,3 +138,13 @@ body {
   }
 }
 
+/* Drop zone styles */
+.drop-zone {
+  transition: all 0.2s ease;
+}
+
+.drop-zone.drag-over {
+  border-color: var(--primary);
+  background-color: rgba(59, 130, 246, 0.1);
+  transform: scale(1.01);
+}

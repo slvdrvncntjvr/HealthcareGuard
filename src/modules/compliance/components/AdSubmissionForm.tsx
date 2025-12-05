@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, DragEvent } from 'react'
 import { 
   Upload, 
   Link2, 
@@ -26,6 +26,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { PLATFORMS, PRODUCT_CATEGORIES } from '../constants'
 import type { Platform, ProductCategory, FormSubmission } from '../types'
 import { fileToBase64, isValidImageUrl, isValidImageFile, MAX_FILE_SIZE } from '../utils/imageUtils'
+import { cn } from '@/lib/utils'
 
 interface AdSubmissionFormProps {
   onSubmit: (data: FormSubmission) => void
@@ -41,13 +42,11 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
+  const [isDragOver, setIsDragOver] = useState(false)
   
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
+  const processFile = useCallback(async (file: File) => {
     if (!isValidImageFile(file)) {
       setFormError('Please upload a valid image file (JPG, PNG, GIF, or WebP)')
       return
@@ -68,6 +67,35 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
       setFormError('Failed to read image file')
     }
   }, [])
+
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    await processFile(file)
+  }, [processFile])
+
+  const handleDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(true)
+  }, [])
+
+  const handleDragLeave = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+  }, [])
+
+  const handleDrop = useCallback(async (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+
+    const files = e.dataTransfer.files
+    if (files && files.length > 0) {
+      await processFile(files[0])
+    }
+  }, [processFile])
 
   const handleUrlChange = useCallback((url: string) => {
     setImageUrl(url)
@@ -128,14 +156,14 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
   }, [marketingCopy, platform, category, imageMode, imageUrl, imageFile, onSubmit])
 
   return (
-    <Card className="card-hover">
+    <Card className="card-hover border-slate-700/50">
       <CardHeader className="border-b border-slate-700/50 pb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-primary-600/20 rounded-lg">
-            <ShieldCheck className="h-6 w-6 text-primary-400" />
+          <div className="p-2.5 bg-blue-500/20 rounded-lg">
+            <ShieldCheck className="h-6 w-6 text-blue-400" />
           </div>
           <div>
-            <CardTitle className="text-2xl">Ad Compliance Check</CardTitle>
+            <CardTitle className="text-2xl text-white">Ad Compliance Check</CardTitle>
             <CardDescription className="text-slate-400 mt-1">
               Validate your healthcare ad against platform policies
             </CardDescription>
@@ -147,7 +175,7 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Marketing Copy */}
           <div className="space-y-2">
-            <Label htmlFor="marketing-copy" className="text-base">
+            <Label htmlFor="marketing-copy" className="text-base text-slate-200">
               Marketing Copy <span className="text-red-400">*</span>
             </Label>
             <Textarea
@@ -155,7 +183,7 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
               placeholder="Enter your ad copy here... e.g., 'Lose weight fast with our miracle supplement! Guaranteed results or your money back!'"
               value={marketingCopy}
               onChange={(e) => setMarketingCopy(e.target.value)}
-              className="min-h-[160px] text-base leading-relaxed"
+              className="min-h-[160px] text-base leading-relaxed bg-slate-800/80 border-slate-600 text-white placeholder:text-slate-500"
             />
             <p className="text-xs text-slate-500">
               Paste your complete ad text including headlines, body copy, and CTAs
@@ -164,7 +192,7 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
 
           {/* Image Upload Section */}
           <div className="space-y-3">
-            <Label className="text-base">Image (Optional)</Label>
+            <Label className="text-base text-slate-200">Image (Optional)</Label>
             
             {/* Toggle between file and URL */}
             <div className="flex gap-2">
@@ -202,8 +230,16 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
 
             {imageMode === 'file' ? (
               <div 
-                className="relative border-2 border-dashed border-slate-600 rounded-lg p-6 text-center hover:border-primary-500 transition-colors cursor-pointer"
+                className={cn(
+                  "relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200",
+                  isDragOver 
+                    ? "border-blue-500 bg-blue-500/10 scale-[1.01]" 
+                    : "border-slate-600 hover:border-blue-500/50 bg-slate-800/50"
+                )}
                 onClick={() => fileInputRef.current?.click()}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
               >
                 <input
                   ref={fileInputRef}
@@ -212,11 +248,17 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
                   onChange={handleFileSelect}
                   className="hidden"
                 />
-                <FileImage className="h-10 w-10 mx-auto text-slate-500 mb-3" />
-                <p className="text-slate-400 text-sm">
+                <FileImage className={cn(
+                  "h-12 w-12 mx-auto mb-3 transition-colors",
+                  isDragOver ? "text-blue-400" : "text-slate-500"
+                )} />
+                <p className={cn(
+                  "text-sm font-medium transition-colors",
+                  isDragOver ? "text-blue-300" : "text-slate-300"
+                )}>
                   {imageFile ? imageFile.name : 'Click to upload or drag and drop'}
                 </p>
-                <p className="text-slate-500 text-xs mt-1">
+                <p className="text-slate-500 text-xs mt-2">
                   JPG, PNG, GIF or WebP (max 10MB)
                 </p>
               </div>
@@ -226,6 +268,7 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
                 placeholder="https://example.com/your-ad-image.jpg"
                 value={imageUrl}
                 onChange={(e) => handleUrlChange(e.target.value)}
+                className="bg-slate-800/80 border-slate-600 text-white placeholder:text-slate-500"
               />
             )}
 
@@ -240,9 +283,9 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
                 <button
                   type="button"
                   onClick={clearImage}
-                  className="absolute -top-2 -right-2 p-1 bg-red-600 rounded-full hover:bg-red-700 transition-colors"
+                  className="absolute -top-2 -right-2 p-1.5 bg-red-600 rounded-full hover:bg-red-500 transition-colors shadow-lg"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3.5 w-3.5 text-white" />
                 </button>
               </div>
             )}
@@ -251,11 +294,11 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
           {/* Platform and Category Selects */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="platform" className="text-base">
+              <Label htmlFor="platform" className="text-base text-slate-200">
                 Target Platform <span className="text-red-400">*</span>
               </Label>
               <Select value={platform} onValueChange={(v) => setPlatform(v as Platform)}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-slate-800/80 border-slate-600 text-white">
                   <SelectValue placeholder="Select platform" />
                 </SelectTrigger>
                 <SelectContent>
@@ -272,11 +315,11 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category" className="text-base">
+              <Label htmlFor="category" className="text-base text-slate-200">
                 Product Category <span className="text-red-400">*</span>
               </Label>
               <Select value={category} onValueChange={(v) => setCategory(v as ProductCategory)}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-slate-800/80 border-slate-600 text-white">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -325,4 +368,3 @@ export function AdSubmissionForm({ onSubmit, isLoading }: AdSubmissionFormProps)
     </Card>
   )
 }
-
