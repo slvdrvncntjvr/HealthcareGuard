@@ -164,7 +164,7 @@ export function ComplianceReport({ report, onReset }: ComplianceReportProps) {
           <CheckCircle2 className="h-4 w-4" />
           <AlertTitle>Excellent Compliance!</AlertTitle>
           <AlertDescription>
-            Your ad copy doesn't contain any policy violations. It should be safe to run on the selected platform.
+            Your ad copy does not contain any policy violations. It should be safe to run on the selected platform.
             However, we recommend always testing with small budgets first.
           </AlertDescription>
         </Alert>

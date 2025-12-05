@@ -103,7 +103,7 @@ export function ViolationCard({ violation, index }: ViolationCardProps) {
             violation.severity === 'WARNING' && 'text-amber-300',
             violation.severity === 'INFO' && 'text-blue-300',
           )}>
-            "{violation.text_segment}"
+            &ldquo;{violation.text_segment}&rdquo;
           </p>
         </div>
 
